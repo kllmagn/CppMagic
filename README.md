@@ -14,7 +14,7 @@ Use %%cpp -t to get a timeit result.
 
 Installation
 --------
-pip install git+git://github.com/xapharius/cppmagic.git
+pip install git+git://github.com/kllmagn/cppmagic.git
 
 <br><br>
 
